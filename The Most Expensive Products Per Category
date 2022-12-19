@@ -1,0 +1,37 @@
+Problem: Find the most expensive products on Amazon for each product category. Output category, product name and the price (as a number)
+
+
+product_name: varchar
+mrp: varchar
+price: varchar
+pdp_url: varchar
+brand_name: varchar
+product_category: varchar
+retailer: varchar
+description: varchar
+rating: float
+review_count: int
+style_attributes: varchar
+total_sizes: varchar
+available_size: varchar
+color: varchar
+
+
+Solution:
+
+with cte as (
+  select product_category as category,
+         product_name,
+         price,
+         substring(price from '(([0-9]+.)[0-9]+)'):: double precision*1.0 as modified_price
+  from  innerwear_amazon_com)
+select category,
+       product_name,
+       modified_price
+from
+    (select cte.category, cte.product_name, price, cte.modified_price,
+            rank() over(partition by category order by modified_price desc) as row
+     from cte) sq
+where row = 1
+  
+  
