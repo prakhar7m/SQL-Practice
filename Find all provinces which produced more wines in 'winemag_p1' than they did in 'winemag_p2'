@@ -1,0 +1,28 @@
+Problem: Find all provinces which produced more wines in 'winemag_p1' than they did in 'winemag_p2'
+
+Description: 
+Find all provinces which produced more wines in 'winemag_p1' than they did in 'winemag_p2'.
+Output the province and the corresponding wine count.
+Order records by the wine count in descending order.
+
+select 
+    t1.province,
+    t1.count_1
+from
+    (select 
+    province,
+    COUNT(*) AS count_1
+    FROM winemag_p1
+    WHERE province is not null
+    group by province) t1
+inner join
+    (select
+    province,
+    count(*) as count_2
+    from winemag_p2
+    where province is not null
+    group by province) t2
+ON
+    t1.province=t2.province and
+    t1.count_1>t2.count_2
+order by t1.count_1 desc 
