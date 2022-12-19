@@ -1,0 +1,33 @@
+Problem : The marketing department wants to launch a new promotion for the most successful product classes. What are the top 3 product classes by number of sales?
+
+table : facebook_products
+
+product_id: int
+product_class: varchar
+brand_name: varchar
+is_low_fat: varchar
+is_recyclable: varchar
+product_category: int
+product_family: varchar
+
+table: facebook_sales
+
+Preview product_id: int
+promotion_id: int
+cost_in_dollars: int
+customer_id: int
+date: datetime
+units_sold: int
+
+Solution:
+
+with cte as
+  (select product_class,
+          rank() over( order by count(*) desc) rnk
+   from facebook_sales s
+   join facebook_products p 
+   on p.product_id = s.product_id
+   group by 1)
+select product_class
+from cte
+where rnk <= 3
