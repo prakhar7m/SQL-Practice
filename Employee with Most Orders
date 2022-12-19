@@ -1,0 +1,37 @@
+Problem: 
+
+What is the last name of the employee or employees who are responsible for the most orders?
+
+Table: shopify_orders
+
+order_id: int
+shop_id: int
+user_id: int
+order_amount: int
+total_items: int
+payment_method: varchar
+created_at: datetime
+resp_employee_id: int
+carrier_id: float
+
+Table: shopify_employees
+
+id: int
+first_name: varchar
+last_name: varchar
+department: varchar 
+
+Solution: 
+
+with cte as 
+  (select id,
+          last_name,
+          count(*) as n_orders,
+          rank() over(order by count(*) desc) as rnk
+   from shopify_orders
+   join shopify_employees
+   on resp_employee_id = id
+   group by id, last_name)
+select last_name
+from cte
+where rnk = 1
