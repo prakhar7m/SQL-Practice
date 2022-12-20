@@ -1,0 +1,52 @@
+Problem: 
+
+Find the product with the most orders from users in Germany. Output the market name of the product or products in case of a tie.
+
+Table: shopify_orders
+
+order_id: int
+shop_id: int
+user_id: int
+order_amount: int
+total_items: int
+payment_method: varchar
+created_at: datetime
+resp_employee_id: int
+carrier_id: float
+
+Table: shopify_users
+
+id: int
+username: varchar
+first_name: varchar
+last_name: varchar
+country: varchar
+city: varchar
+
+Table: dim_product
+prod_sku_id: varchar
+prod_sku_name: varchar
+prod_brand: varchar
+market_name: varchar
+
+Table: map_product_order
+
+order_id: int
+product_id: varchar
+
+Solution:
+
+with cte as (
+    select p.market_name,
+    count(*) as units_sold,
+    dense_rank() over(order by count(*) desc) as rnk
+    from shopify_orders o 
+    join shopify_users u on o.user_id = u.id 
+    join map_product_order mp on o.order_id = mp.order_id
+    join dim_product p on mp.product_id = p.prod_sku_id
+    where country = 'Germany'
+    group by market_name
+    )
+select market_name
+from cte 
+where rnk=1
