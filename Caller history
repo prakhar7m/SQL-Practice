@@ -1,0 +1,21 @@
+Problem:
+
+Given a phone log table that has information about callers' call history, find out the callers whose first and last calls were to the same person on a given day.
+Output the caller ID, recipient ID, and the date called.
+
+Table: caller_history
+
+caller_id: int
+recipient_id: int
+date_called: datetime
+
+Solution:
+
+with first_and_last as
+  (select *,
+          first_value(recipient_id) over (partition by caller_id, DATE(date_called) order by date_called asc) as first_call,
+          first_value(recipient_id) over( partition by caller_id, DATE(date_called) order by date_called desc) as last_call
+   from caller_history)
+select distinct caller_id, first_call as recipient_id, DATE(date_called)
+from first_and_last
+where first_call = last_call
