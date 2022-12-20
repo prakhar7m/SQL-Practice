@@ -1,0 +1,42 @@
+Problem:
+
+Find the year which had the highest number of players. Output the year along with the number of players.
+
+Table: nfl_combine
+
+year: int
+name: varchar
+firstname: varchar
+lastname: varchar
+position: varchar
+heightfeet: int
+heightinches: float
+heightinchestotal: float
+weight: int
+arms: float
+hands: float
+fortyyd: float
+twentyyd: float
+tenyd: float
+twentyss: float
+threecone: float
+vertical: float
+broad: int
+bench: int
+round: int
+college: varchar
+pick: varchar
+pickround: int
+picktotal: int
+
+Solution:
+
+with cte as(
+    select year,
+    count(*) as number_of_players,
+    rank() over(order by count(*) desc) as rnk
+    from nfl_combine
+    group by year)
+select year, number_of_players from cte 
+where rnk=1
+order by number_of_players desc
