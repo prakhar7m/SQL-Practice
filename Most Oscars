@@ -1,0 +1,23 @@
+Problem:
+
+Find the nominee who has won the most Oscars. Output the nominee's name alongside the result.
+
+Table: oscar_nominees
+
+year: int
+category: varchar
+nominee: varchar
+movie: varchar
+winner: bool
+id: int
+
+with cte as(
+  select nominee,
+         rank() over(order by count(winner) desc) as rnk,
+         count(winner) as n_times_won
+  from oscar_nominees
+  where winner = TRUE
+  group by nominee)
+select nominee, n_times_won
+from cte 
+where rnk = 1
